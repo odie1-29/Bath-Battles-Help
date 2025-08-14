@@ -1,32 +1,30 @@
-import os
 import discord
-from discord.ext import commands
-
-OWNER_ID = 1282714989223743581  # Replace with your Discord User ID
+import os
 
 intents = discord.Intents.default()
 intents.messages = True
 intents.dm_messages = True
-bot = commands.Bot(command_prefix="!", intents=intents)
 
-@bot.event
+client = discord.Client(intents=intents)
+
+BOT_OWNER_ID = 1282714989223743581  # replace with your Discord ID
+
+@client.event
 async def on_ready():
-    print(f"✅ Logged in as {bot.user} (ID: {bot.user.id})")
+    print(f'Logged in as {client.user}')
 
-@bot.event
+@client.event
 async def on_message(message):
-    if message.author == bot.user:
+    # Ignore messages from the bot itself
+    if message.author == client.user:
         return
 
+    # Only respond to DMs
     if isinstance(message.channel, discord.DMChannel):
-        owner = await bot.fetch_user(OWNER_ID)
-        user_info = f"📩 User who DMed me: {message.author} (ID: {message.author.id})"
-        try:
-            await owner.send(user_info)
-            print(f"Sent DM to owner: {user_info}")
-        except discord.Forbidden:
-            print("❌ Could not DM owner — DMs might be disabled or no mutual server.")
+        user_info = f"User: {message.author} (ID: {message.author.id})"
+        message_content = f"Message: {message.content}"
+        
+        owner = await client.fetch_user(BOT_OWNER_ID)
+        await owner.send(f"{user_info}\n{message_content}")
 
-    await bot.process_commands(message)
-
-bot.run(os.getenv("BOT_TOKEN"))
+client.run(os.environ['BOT_TOKEN'])
