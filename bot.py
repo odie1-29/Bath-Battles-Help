@@ -21,10 +21,15 @@ async def on_message(message):
 
     # Only respond to DMs
     if isinstance(message.channel, discord.DMChannel):
-        user_info = f"User: {message.author} (ID: {message.author.id})"
-        message_content = f"Message: {message.content}"
-        
         owner = await client.fetch_user(BOT_OWNER_ID)
-        await owner.send(f"{user_info}\n{message_content}")
+        
+        embed = discord.Embed(
+            title="New DM Received",
+            color=discord.Color.blue()
+        )
+        embed.add_field(name="From", value=f"{message.author} (ID: {message.author.id})", inline=False)
+        embed.add_field(name="Message", value=message.content, inline=False)
+        
+        await owner.send(embed=embed)
 
 client.run(os.environ['BOT_TOKEN'])
