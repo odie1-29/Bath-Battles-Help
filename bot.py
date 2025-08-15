@@ -15,21 +15,24 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    # Ignore messages from the bot itself
     if message.author == client.user:
         return
 
-    # Only respond to DMs
+    # Respond only to DMs
     if isinstance(message.channel, discord.DMChannel):
         owner = await client.fetch_user(BOT_OWNER_ID)
-        
+
+        # Create embed for you
         embed = discord.Embed(
             title="New DM Received",
             color=discord.Color.blue()
         )
         embed.add_field(name="From", value=f"{message.author} (ID: {message.author.id})", inline=False)
-        embed.add_field(name="Message", value=message.content, inline=False)
-        
+        embed.add_field(name="Message", value=message.content or "[No Text]", inline=False)
+
         await owner.send(embed=embed)
+
+        # Send auto-reply to the sender
+        await message.channel.send("Hiya! Support will be with you soon. 😊")
 
 client.run(os.environ['BOT_TOKEN'])
